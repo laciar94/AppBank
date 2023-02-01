@@ -1,25 +1,28 @@
 const Transfer = require('../models/transfer.models');
+const User = require('../models/user.model');
 
 exports.transferAmount = async (req, res) => {
   try {
     const { amount, accountNumber, senderUserId } = req.body;
 
-    const userReceiver = await Transfer.findOne({
+    const userReceiver = await User.findOne({
       where: {
-        accountNumber,
         status: true,
+        accountNumber,
       },
     });
-    console.log(userReceiver);
 
     if (!userReceiver) {
+      console.error(
+        `Receiver user not found for account number: ${accountNumber}`
+      );
       return res.status(404).json({
         status: 'failed',
         message: 'Receiver user not found',
       });
     }
 
-    const userSender = await Transfer.findOne({
+    const userSender = await User.findOne({
       where: {
         status: true,
         id: senderUserId,
@@ -61,7 +64,7 @@ exports.transferAmount = async (req, res) => {
       receiverUserId: userReceiver.id,
       amount,
     };
-    await Transfer.create({ amount, senderUserId, receiverUserId });
+    await Transfer.create(newTransfer);
 
     res.status(201).json({
       status: 'success',
@@ -69,6 +72,7 @@ exports.transferAmount = async (req, res) => {
       newTransfer,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       status: 'failed',
       message: 'Internal Server Error',

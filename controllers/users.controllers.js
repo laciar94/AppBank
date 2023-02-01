@@ -1,9 +1,12 @@
+const Transfer = require('../models/transfer.models');
 const User = require('../models/user.model');
 
 const findUsers = async (req, res) => {
   try {
     const users = await User.findAll({
-      where: {},
+      where: {
+        status: true,
+      },
     });
     if (!users) {
       return res.status(404).json({
@@ -102,7 +105,32 @@ const login = async (req, res = response) => {
   }
 };
 
-const getHistory = async (req, res) => {};
+const getHistory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const transferHistory = await Transfer.findAll({
+      where: {
+        senderUserId: id,
+      },
+      order: [['id', 'DESC']],
+    });
+    if (!transferHistory) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'No entries found in transfer history',
+      });
+    }
+    res.status(200).json({
+      status: 'success',
+      data: transferHistory,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'fail',
+      message: 'Server error',
+    });
+  }
+};
 module.exports = {
   findUsers,
   findUser,

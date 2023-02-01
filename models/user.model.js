@@ -16,6 +16,7 @@ const User = db.define('user', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+
   password: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -23,16 +24,11 @@ const User = db.define('user', {
   accountNumber: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 1000,
   },
   status: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: true,
-  },
-  senderUserId: {
-    type: DataTypes.INTEGER,
-    allowNull: true,
   },
 });
 
